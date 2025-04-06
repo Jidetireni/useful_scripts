@@ -40,11 +40,19 @@ else
     # Update and install Docker
     if ! sudo apt-get update &> /dev/null || \
        ! sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin &> /dev/null
-       then
+    then
         echo "Failed to install Docker. Exiting..."
         exit 1
     fi
 
     echo "$service INSTALLED ..."
     $service -v
+
+    # Allow current user to use Docker without sudo
+    sudo groupadd docker 2>/dev/null || true
+    sudo usermod -aG docker "$USER"
+    echo "User '$USER' has been added to the 'docker' group."
+
+    echo "You need to log out and log back in for the group changes to take effect."
+    echo "Alternatively, run: newgrp docker"
 fi
